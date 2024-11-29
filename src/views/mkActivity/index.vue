@@ -98,8 +98,15 @@
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-row>
           <el-col :span="12">
-            <el-form-item label="activity name" prop="noticeTitle">
+            <el-form-item label="activity name" prop="activityName">
               <el-input v-model="form.activityName" placeholder="activity name" />
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="description" prop="description">
+              <el-input v-model="form.description" placeholder="description" />
             </el-form-item>
           </el-col>
         </el-row>
@@ -113,7 +120,7 @@
 </template>
 
 <script>
-import { listActivity, getActivity, delActivity, addActivity, updateActivity } from "@/api/mkActivity/activity";
+import { listActivity, getActivity, deleteActivities, addActivity, updateActivity } from "@/api/mkActivity/activity";
 
 export default {
   name: "Notice",
@@ -140,13 +147,11 @@ export default {
       queryParams: {
         pageNum: 1,
         pageSize: 10,
-        noticeTitle: undefined,
-        createBy: undefined,
-        status: undefined
+        activityName: undefined
       },
       form: {},
       rules: {
-        noticeTitle: [
+        activityName: [
           { required: true, message: "activity name can not be empty", trigger: "blur" }
         ]
       }
@@ -189,7 +194,7 @@ export default {
     },
     // 多选框选中数据
     handleSelectionChange(selection) {
-      this.ids = selection.map(item => item.noticeId)
+      this.ids = selection.map(item => item.activityId)
       this.single = selection.length != 1
       this.multiple = !selection.length
     },
@@ -212,7 +217,7 @@ export default {
     submitForm: function() {
       this.$refs["form"].validate(valid => {
         if (valid) {
-          if (this.form.noticeId != undefined) {
+          if (this.form.id != undefined) {
             updateActivity(this.form).then(response => {
               this.$modal.msgSuccess("edited successfully");
               this.open = false;
@@ -229,13 +234,18 @@ export default {
       });
     },
     handleDelete(row) {
-      const ids = row.id || this.ids
-      this.$modal.confirm('confirm to delete"' + ids + '"items？').then(function() {
-        return delActivity(ids);
+      const ids = Array.isArray(row) ? row.map(item => item.id) : [row.id || this.ids];
+      if (ids.length === 0) {
+        this.$modal.msgWarning("Please select items to delete.");
+        return;
+      }
+      this.$modal.confirm('Confirm to delete these activities?').then(() => {
+        return deleteActivities(ids);
       }).then(() => {
         this.getList();
-        this.$modal.msgSuccess("deleted successfully");
+        this.$modal.msgSuccess("Deleted successfully");
       }).catch(() => {
+        // Handle cancel or error
       });
     }
   }
