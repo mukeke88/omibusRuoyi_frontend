@@ -4,7 +4,7 @@
       <el-form-item label="Activity Name" prop="activityName">
         <el-input
           v-model="queryParams.activityName"
-          placeholder="activity name"
+          placeholder="Activity Name"
           clearable
           @keyup.enter.native="handleQuery"
         />
@@ -55,16 +55,17 @@
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="index" align="center" prop="id" width="100" />
       <el-table-column
-        label="activity name"
+        label="Activity Name"
         align="center"
         prop="activityName"
         :show-overflow-tooltip="true"
       />
-      <el-table-column label="description" align="center" prop="description" width="100">
+      <el-table-column label="Description" align="center" prop="description" width="100">
         <template slot-scope="scope">
           <span>{{ scope.row.description }}</span>
         </template>
       </el-table-column>
+     
       <el-table-column
       label="Status"
       align="center"
@@ -82,7 +83,12 @@
         >Paused</el-tag>
       </template>
   </el-table-column>
-      <el-table-column label="operation" align="center" class-name="small-padding fixed-width">
+      <el-table-column label="Total Time" align="center" prop="totalTime" width="100">
+            <template slot-scope="scope">
+              <span>{{ scope.row.totalTime }}</span>
+            </template>
+      </el-table-column>
+      <el-table-column label="Operation" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
             size="mini"
