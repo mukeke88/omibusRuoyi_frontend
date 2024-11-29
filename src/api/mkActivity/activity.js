@@ -39,3 +39,19 @@ export function deleteActivities(ids) {
     data: ids // Sending array in request body
   });
 }
+
+// Start activity
+export function startActivity(id) {
+  return request({
+    url: `/mk-activity/start/${id}`,
+    method: "post"
+  });
+}
+
+// Pause activity
+export function pauseActivity(id) {
+  return request({
+    url: `/mk-activity/pause/${id}`,
+    method: "post"
+  });
+}

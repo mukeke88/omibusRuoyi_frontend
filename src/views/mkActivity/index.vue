@@ -65,6 +65,23 @@
           <span>{{ scope.row.description }}</span>
         </template>
       </el-table-column>
+      <el-table-column
+      label="Status"
+      align="center"
+      prop="status"
+      :show-overflow-tooltip="true"
+    >
+      <template slot-scope="scope">
+        <el-tag
+          v-if="scope.row.status === 'active'"
+          type="success"
+        >Active</el-tag>
+        <el-tag
+          v-if="scope.row.status === 'paused'"
+          type="warning"
+        >Paused</el-tag>
+      </template>
+  </el-table-column>
       <el-table-column label="operation" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
@@ -81,6 +98,18 @@
             @click="handleDelete(scope.row)"
             v-hasPermi="['mkActivity:index:remove']"
           >delete</el-button>
+          <el-button
+            size="mini"
+            type="text"
+            icon="el-icon-play"
+            @click="handleStart(scope.row)"
+          >start</el-button>
+          <el-button
+            size="mini"
+            type="text"
+            icon="el-icon-pause"
+            @click="handlePause(scope.row)"
+          >pause</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -120,7 +149,7 @@
 </template>
 
 <script>
-import { listActivity, getActivity, deleteActivities, addActivity, updateActivity } from "@/api/mkActivity/activity";
+import { listActivity, getActivity, deleteActivities, addActivity, updateActivity, startActivity, pauseActivity } from "@/api/mkActivity/activity";
 
 export default {
   name: "Notice",
@@ -161,6 +190,30 @@ export default {
     this.getList();
   },
   methods: {
+     // Start activity
+  handleStart(row) {
+    const id = row.id;
+    this.$modal.confirm(`Confirm to start activity "${row.activityName}"?`).then(() => {
+      return startActivity(id);
+    }).then(() => {
+      this.$modal.msgSuccess("Activity started successfully");
+      this.getList();
+    }).catch(() => {
+      // Handle cancel or error
+    });
+  },
+  // Pause activity
+  handlePause(row) {
+    const id = row.id;
+    this.$modal.confirm(`Confirm to pause activity "${row.activityName}"?`).then(() => {
+      return pauseActivity(id);
+    }).then(() => {
+      this.$modal.msgSuccess("Activity paused successfully");
+      this.getList();
+    }).catch(() => {
+      // Handle cancel or error
+    });
+  },
     getList() {
       this.loading = true;
       listActivity(this.queryParams).then(response => {
